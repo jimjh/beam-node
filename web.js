@@ -42,11 +42,14 @@ io.sockets.on('connection', function (socket) {
   });
   // on disconnect, tell app server
   socket.on('disconnect', function () {
-    http.request({
+    var req =  http.request({
       host: APP_HOST,
       method: 'DELETE',
       path: '/endpoints/' + socket.get(KEY_UUID),
       auth: 'codex:abc'
+    }, function(res){
+      console.log('STATUS: ' + res.statusCode);
     });
+    req.end();
   });
 });
