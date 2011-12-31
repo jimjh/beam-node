@@ -39,6 +39,7 @@ var unregister_endpoint = function (uuid){
 
   var req =  http.request({
     host: APP_HOST,
+    hostname: APP_HOST,
     method: 'DELETE',
     path: '/endpoints/' + uuid,
     auth: 'codex:abc'
@@ -50,7 +51,6 @@ var unregister_endpoint = function (uuid){
     console.log('Problem with request: ' + e.message);
   });
 
-  req.write('\n');
   req.end();
 
 }
