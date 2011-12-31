@@ -36,10 +36,12 @@ io.configure(function () {
 });
 
 io.sockets.on('connection', function (socket) {
+
   // set endpoint UUID for this session
   socket.on(EVT_SET_UUID, function (uuid) {
     socket.set(KEY_UUID, uuid);
   });
+
   // on disconnect, tell app server
   socket.on('disconnect', function () {
     var req =  http.request({
@@ -50,6 +52,14 @@ io.sockets.on('connection', function (socket) {
     }, function(res){
       console.log('STATUS: ' + res.statusCode);
     });
+
+    req.on('error', function(e){
+      console.log('Problem with request: ' + e.message);
+    });
+
+    req.write('\n');
     req.end();
+
   });
+
 });
