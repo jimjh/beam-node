@@ -24,7 +24,7 @@ app.get('/', function (req, res) {
 
 var KEY_UUID = 'uuid';
 var EVT_SET_UUID = 'set uuid';
-var APP_HOST = "afternoon-fire-7441.heroku.com;
+var APP_HOST = "afternoon-fire-7441.heroku.com";
 
 /* 
  * heroku doesn't support websockets yet, so we
