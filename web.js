@@ -1,5 +1,7 @@
 /**
  * Web Socket server
+ * Notifies app server when a client is disconnected.
+ * @author Jiunn Haur Lim
  */
 
 //-------------------------------------------------
@@ -18,9 +20,9 @@ app.get('/', function (req, res) {
   res.send("Hello, World!");
 });
 
-//------------------------------------------------
+//-------------------------------------------------
 // Socket.IO setup
-//------------------------------------------------
+//-------------------------------------------------
 
 var KEY_UUID = 'uuid';
 var EVT_SET_UUID = 'set uuid';
@@ -41,7 +43,8 @@ var unregister_endpoint = function (uuid){
     host: APP_HOST,
     hostname: APP_HOST,
     method: 'DELETE',
-    path: '/endpoints/' + uuid
+    path: '/endpoints/' + uuid,
+    headers : {'Content-Length' : 0}
   }, function(res){
     console.log('STATUS: ' + res.statusCode);
     console.log('HEADERS: ' + JSON.stringify(res.headers));
