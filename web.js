@@ -35,6 +35,26 @@ io.configure(function () {
   io.set("polling duration", 10); 
 });
 
+var unregister_endpoint = function (uuid){
+
+  var req =  http.request({
+    host: APP_HOST,
+    method: 'DELETE',
+    path: '/endpoints/' + uuid,
+    auth: 'codex:abc'
+  }, function(res){
+    console.log('STATUS: ' + res.statusCode);
+  });
+
+  req.on('error', function(e){
+    console.log('Problem with request: ' + e.message);
+  });
+
+  req.write('\n');
+  req.end();
+
+}
+
 io.sockets.on('connection', function (socket) {
 
   // set endpoint UUID for this session
@@ -45,22 +65,9 @@ io.sockets.on('connection', function (socket) {
   // on disconnect, tell app server
   socket.on('disconnect', function () {
     console.log ("disconnect received.");
-    var req =  http.request({
-      host: APP_HOST,
-      method: 'DELETE',
-      path: '/endpoints/' + socket.get(KEY_UUID),
-      auth: 'codex:abc'
-    }, function(res){
-      console.log('STATUS: ' + res.statusCode);
+    socket.get(KEY_UUID, function (err, uuid) {
+      unregister_endpoint(uuid);
     });
-
-    req.on('error', function(e){
-      console.log('Problem with request: ' + e.message);
-    });
-
-    req.write('\n');
-    req.end();
-
   });
 
 });
