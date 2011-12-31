@@ -47,6 +47,10 @@ io.configure(function () {
  * @param uuid      UUID of endpoint to unregister
  */
 var unregister_endpoint = function (uuid){
+  
+  var username = 'codex';
+  var password = 'abc';
+  var auth = 'Basic ' + new Buffer(username + ':' + password).toString('base64');
 
   // DELETE /endpoints/<uuid> HTTP/1.1
   var http_options = {
@@ -54,8 +58,10 @@ var unregister_endpoint = function (uuid){
     hostname: APP_HOST,
     method: 'DELETE',
     path: '/endpoints/' + uuid,
-    headers : {'Content-Length' : 0},
-    auth: "codex:abc"
+    headers : {
+      'Content-Length' : 0,
+      'Authorization' : auth
+    }
   };
 
   // invoked on response from app server
