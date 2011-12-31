@@ -41,8 +41,7 @@ var unregister_endpoint = function (uuid){
     host: APP_HOST,
     hostname: APP_HOST,
     method: 'DELETE',
-    path: '/endpoints/' + uuid,
-    auth: 'codex:abc'
+    path: '/endpoints/' + uuid
   }, function(res){
     console.log('STATUS: ' + res.statusCode);
   });
