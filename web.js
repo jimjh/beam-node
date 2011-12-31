@@ -47,6 +47,6 @@ io.sockets.on('connection', function (socket) {
       method: 'DELETE',
       path: '/endpoints/' + socket.get(KEY_UUID),
       auth: 'codex:abc'
-    }, function () {});
+    });
   });
 });
