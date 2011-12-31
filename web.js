@@ -44,6 +44,7 @@ io.sockets.on('connection', function (socket) {
 
   // on disconnect, tell app server
   socket.on('disconnect', function () {
+    console.log ("disconnect received.");
     var req =  http.request({
       host: APP_HOST,
       method: 'DELETE',
