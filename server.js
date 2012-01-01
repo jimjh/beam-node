@@ -13,7 +13,8 @@ var endpoint = require('./endpoint.js');
 //---------------------------------------------------------------------
 
 // copied from heroku example
-var port = process.env.PORT || 3000;
+// var port = process.env.PORT || 3000;
+var port = 13359;
 app.listen(port, function(){
   console.log('Listening on port ' + port);
 });
