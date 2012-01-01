@@ -35,7 +35,7 @@ var EVT_SET_UUID = 'set uuid';
  */
 io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
+  io.set("polling duration", 20); 
 });
 
 // listen for incoming connections

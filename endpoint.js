@@ -10,8 +10,7 @@ var KEY_UUID = 'uuid';
 var APP_HOST = 'afternoon-fire-7441.heroku.com';
  
 /**
- * Unregisters an endpoint with the given UUID from the
- * app server.
+ * Unregisters an endpoint with the given UUID from the app server.
  * @param uuid      UUID of endpoint to unregister
  */
 var unregister = function (uuid){
@@ -41,7 +40,7 @@ var unregister = function (uuid){
 
   // invoked on connection error
   var error_handler = function (e){
-    console.log ('Problem with request: ' + e.message);
+    console.log('Problem with request: ' + e.message);
   };
 
   // fire http request
@@ -52,9 +51,8 @@ var unregister = function (uuid){
 };
 
 /**
- * Registers UUID for an endpoint and listens for the
- * 'disconnect' event.
- * @param socket
+ * Registers UUID for an endpoint and listens for the 'disconnect' event.
+ * @param socket      from socket.io 'connection' event
  * @param uuid        UUID of endpoint to register
  */
 exports.register = function (socket, uuid){
@@ -64,8 +62,8 @@ exports.register = function (socket, uuid){
 
   // on disconnect, tell app server
   socket.on('disconnect', function () {
-    console.log ("Disconnect received.");
     socket.get(KEY_UUID, function (err, uuid) {
+      console.log ('Disconnect received from ' + uuid);
       unregister(uuid);
     });
   });
