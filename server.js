@@ -21,11 +21,6 @@ app.listen(port, function(){
   console.log('Listening on port ' + port);
 });
 
-// reply with "Hello, World!" for every request
-app.get('/', function (req, res) {
-  res.send('Hello, World!');
-});
-
 //---------------------------------------------------------------------
 // Socket.IO setup
 //---------------------------------------------------------------------
