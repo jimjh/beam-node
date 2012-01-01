@@ -14,6 +14,7 @@ var endpoint = require('./endpoint.js');
 
 // copied from heroku example
 // var port = process.env.PORT || 3000;
+// nodester port
 var port = 13359;
 app.listen(port, function(){
   console.log('Listening on port ' + port);
@@ -34,10 +35,10 @@ var EVT_SET_UUID = 'set uuid';
  * heroku doesn't support websockets yet, so we
  * fall back to polling
  */
-io.configure(function () { 
+/*io.configure(function () { 
   io.set("transports", ["xhr-polling"]); 
   io.set("polling duration", 10); 
-});
+});*/
 
 // listen for incoming connections
 io.sockets.on('connection', function (socket) {
