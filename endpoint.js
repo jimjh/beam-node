@@ -9,10 +9,10 @@ var http = require('http');
 var singleton = null;
  
 const KEY_UUID = 'uuid';
-// const APP_HOST = 'afternoon-fire-7441.heroku.com';
-// const APP_PORT = 80
-const APP_HOST = 'localhost';
-const APP_PORT = '3000';
+const APP_HOST = 'afternoon-fire-7441.heroku.com';
+const APP_PORT = 80
+// const APP_HOST = 'localhost';
+// const APP_PORT = '3000';
 
 //---------------------------------------------------------------------
 // PRIVATE
