@@ -26,7 +26,7 @@ app.get('/', function (req, res) {
 });
 
 // on notification from file server, tell endpoints
-app.get('/transfer/:uuid' function(req, res) {
+app.get('/transfer/:uuid', function(req, res) {
   console.log(req.params);
 });
 
