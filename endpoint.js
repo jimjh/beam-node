@@ -1,13 +1,22 @@
 /**
+ * Endpoint Module
  * - Registers endpoint UUID for each connected client
  * - Notifies app server when a client is disconnected
  * @author Jiunn Haur Lim
  */
  
 var http = require('http');
+var singleton = null;
  
-var KEY_UUID = 'uuid';
-var APP_HOST = 'afternoon-fire-7441.heroku.com';
+const KEY_UUID = 'uuid';
+// const APP_HOST = 'afternoon-fire-7441.heroku.com';
+// const APP_PORT = 80
+const APP_HOST = 'localhost';
+const APP_PORT = '3000';
+
+//---------------------------------------------------------------------
+// PRIVATE
+//---------------------------------------------------------------------
  
 /**
  * Unregisters an endpoint with the given UUID from the app server.
@@ -28,8 +37,9 @@ var unregister = function (uuid){
   var http_options = {
     host: APP_HOST,
     hostname: APP_HOST,
+    port: APP_PORT,
     method: 'DELETE',
-    path: '/endpoints/' + uuid,
+    path: '/endpoints/' + uuid + '/deactivate',
     headers : http_headers
   };
 
@@ -37,7 +47,7 @@ var unregister = function (uuid){
   var response_callback = function (res){
     console.log('Status from app server: ' + res.statusCode);
   };
-
+  // TODOOOOOOOO: where to put the data? content-length?
   // invoked on connection error
   var error_handler = function (e){
     console.log('Problem with request: ' + e.message);
@@ -50,6 +60,10 @@ var unregister = function (uuid){
 
 };
 
+//---------------------------------------------------------------------
+// PUBLIC
+//---------------------------------------------------------------------
+
 /**
  * Registers UUID for an endpoint and listens for the 'disconnect' event.
  * @param socket      from socket.io 'connection' event
@@ -59,6 +73,9 @@ exports.register = function (socket, uuid){
   
   // set endpoint UUID for this session
   socket.set(KEY_UUID, uuid);
+  
+  // create a room for this endpoint
+  socket.join(uuid);
 
   // on disconnect, tell app server
   socket.on('disconnect', function () {
@@ -69,3 +86,7 @@ exports.register = function (socket, uuid){
   });
 
 };
+
+exports.transfer = function (uuid){
+  sio.sockets.in(uuid).send('Man, good to see you back!');
+}

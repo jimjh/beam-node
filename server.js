@@ -1,5 +1,5 @@
 /**
- * Web Socket server
+ * Web server - nodester entry point
  * @author Jiunn Haur Lim
  */
 
@@ -25,20 +25,16 @@ app.get('/', function (req, res) {
   res.send('Hello, World!');
 });
 
+// on notification from file server, tell endpoints
+app.get('/transfer/:uuid' function(req, res) {
+  console.log(req.params);
+});
+
 //---------------------------------------------------------------------
 // Socket.IO setup
 //---------------------------------------------------------------------
 
 var EVT_SET_UUID = 'set uuid';
-
-/* 
- * heroku doesn't support websockets yet, so we
- * fall back to polling
- */
-/*io.configure(function () { 
-  io.set("transports", ["xhr-polling"]); 
-  io.set("polling duration", 10); 
-});*/
 
 // listen for incoming connections
 io.sockets.on('connection', function (socket) {
