@@ -64,6 +64,9 @@ var unregister = function (uuid){
 // PUBLIC
 //---------------------------------------------------------------------
 
+//--- Events ---
+exports.EVT_SET_UUID = 'set uuid';
+
 /**
  * Registers UUID for an endpoint and listens for the 'disconnect' event.
  * @param socket      from socket.io 'connection' event

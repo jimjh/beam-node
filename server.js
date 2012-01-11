@@ -27,19 +27,19 @@ app.get('/', function (req, res) {
 
 // on notification from file server, tell endpoints
 app.get('/transfer/:uuid', function(req, res) {
-  console.log(req.params);
+  // TODO: error handling and validation
+  console.log (req);
+  endpoint.transfer(req.params.uuid);
 });
 
 //---------------------------------------------------------------------
 // Socket.IO setup
 //---------------------------------------------------------------------
 
-var EVT_SET_UUID = 'set uuid';
-
 // listen for incoming connections
 io.sockets.on('connection', function (socket) {
   // listen for "set_uuid" event, then register endpoint
-  socket.on(EVT_SET_UUID, function (uuid) {
+  socket.on(endpoint.EVT_SET_UUID, function (uuid) {
     endpoint.register(socket, uuid);
   });
 });
