@@ -30,4 +30,5 @@ app.get('/transfer/:uuid', function(req, res) {
   endpoint.transfer(req.params.uuid,
                     req.query.bucket,
                     req.query.key);
+  res.send('Hello, World!');
 });
