@@ -107,6 +107,8 @@ exports.listen = function(app){
     });
   });
   
+  return exports;
+  
 }
 
 exports.transfer = function (uuid){
