@@ -62,13 +62,14 @@ S3.prototype._getExpires = function (){
 };
 
 /**
- * Creates a HMAC signature for the S3 request.
+ * Creates a URL-encoded HMAC signature for the S3 request.
+ * URL-Encode( Base64( HMAC-SHA1( StringToSign ) ) )
  */
 S3.prototype._getSignature = function (resource, expires){
   var stringToSign = "GET\n\n\n" + expires + "\n" + resource;
   var hmac = crypto.createHmac('sha1', this._awsSecretKey);
 	hmac.update(stringToSign);
-	return escape(hmac.digest('base64'));
+	return encodeURIComponent(hmac.digest('base64'));
 };
 
 // export the s3 library
