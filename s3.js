@@ -44,7 +44,8 @@ S3.prototype.getQueryString = function (host, bucketName, fileName){
           '/' + fileName + '?' +
           'AWSAccessKeyId=' + this._awsAccessKey + '&' +
           'Expires=' + expires + '&' +
-          'Signature=' + signature;
+          'Signature=' + signature + 
+          'response-content-type=binary/octet-stream';
   
 };
 
