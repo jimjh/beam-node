@@ -27,7 +27,7 @@ process.on('uncaughtException', function (err) {
  *   CanonicalizedResource;
  */
 
-var S3 = function(awsSecretKey, awsAccessKey, options){
+var S3 = function(awsAccessKey, awsSecretKey, options){
 	this._awsSecretKey = awsSecretKey;
 	this._awsAccessKey = awsAccessKey;
 };
@@ -40,7 +40,8 @@ S3.prototype.getQueryString = function (host, bucketName, fileName){
   var expires = this._getExpires();
   
   var signature = this._getSignature (resource, expires);
-  return  '/' + fileName + '?' +
+  return  'http://' + host +
+          '/' + fileName + '?' +
           'AWSAccessKeyId=' + this._awsAccessKey + '&' +
           'Expires=' + expires + '&' +
           'Signature=' + signature;
