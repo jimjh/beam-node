@@ -7,7 +7,6 @@
  */
  
 var http = require('http');
-
 var S3 = require('./s3.js').S3;
 
 var socketio = require('socket.io');
@@ -40,7 +39,7 @@ const s3 = new S3(S3_KEY, S3_SECRET);
  
 /**
  * Unregisters an endpoint with the given UUID from the app server.
- * @param uuid      UUID of endpoint to unregister
+ * @param {UUID} uuid      UUID of endpoint to unregister
  */
 var unregister = function (uuid){
   
@@ -125,12 +124,9 @@ exports.listen = function(app){
 
 exports.transfer = function (uuid, bucketName, fileName, etag){
 
-  var resource = '/' + bucketName + '/' + fileName;
-  var host = bucketName + HOST_SUFFIX;  
-  var headers = s3._getGetHeaders(host); 
-
-  s3._addAuthorizationHeader(headers, 'GET', resource, S3_SECRET, S3_KEY);
-
-  io.sockets.in(uuid).emit(EVT_GET_FILE, headers);
+  var host = bucketName + HOST_SUFFIX;
+  var queryStr = s3.getQueryString(host, bucketName, fileName);
+  console.log (queryStr);
+  io.sockets.in(uuid).emit(EVT_GET_FILE, queryStr);
   
 }

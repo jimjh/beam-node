@@ -29,6 +29,5 @@ app.get('/transfer/:uuid', function(req, res) {
   // TODO: error handling and validation
   endpoint.transfer(req.params.uuid,
                     req.query.bucket,
-                    req.query.key,
-                    req.query.etag);
+                    req.query.key);
 });
