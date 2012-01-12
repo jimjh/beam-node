@@ -5,8 +5,7 @@
 
 var app = require('express').createServer();
 var http = require('http');
-var io = require('socket.io').listen(app);
-var endpoint = require('./endpoint.js');
+var endpoint = require('./endpoint.js').listen(app);
 
 //---------------------------------------------------------------------
 // App bootstrapping
@@ -30,16 +29,4 @@ app.get('/transfer/:uuid', function(req, res) {
   // TODO: error handling and validation
   console.log (req);
   endpoint.transfer(req.params.uuid);
-});
-
-//---------------------------------------------------------------------
-// Socket.IO setup
-//---------------------------------------------------------------------
-
-// listen for incoming connections
-io.sockets.on('connection', function (socket) {
-  // listen for "set_uuid" event, then register endpoint
-  socket.on(endpoint.EVT_SET_UUID, function (uuid) {
-    endpoint.register(socket, uuid);
-  });
 });

@@ -6,7 +6,8 @@
  */
  
 var http = require('http');
-var singleton = null;
+var socketio = require('socket.io');
+var io = null;
  
 const KEY_UUID = 'uuid';
 const APP_HOST = 'afternoon-fire-7441.heroku.com';
@@ -60,19 +61,12 @@ var unregister = function (uuid){
 
 };
 
-//---------------------------------------------------------------------
-// PUBLIC
-//---------------------------------------------------------------------
-
-//--- Events ---
-exports.EVT_SET_UUID = 'set uuid';
-
 /**
  * Registers UUID for an endpoint and listens for the 'disconnect' event.
  * @param socket      from socket.io 'connection' event
  * @param uuid        UUID of endpoint to register
  */
-exports.register = function (socket, uuid){
+var register = function (socket, uuid){
   
   // set endpoint UUID for this session
   socket.set(KEY_UUID, uuid);
@@ -90,6 +84,27 @@ exports.register = function (socket, uuid){
 
 };
 
+//---------------------------------------------------------------------
+// PUBLIC
+//---------------------------------------------------------------------
+
+//--- Events ---
+exports.EVT_SET_UUID = 'set uuid';
+
+exports.listen = function(app){
+  
+  io = socketio.listen(app);
+
+  // listen for incoming connections
+  io.sockets.on('connection', function (socket) {
+    // listen for "set_uuid" event, then register endpoint
+    socket.on(EVT_SET_UUID, function (uuid) {
+      register(socket, uuid);
+    });
+  });
+  
+}
+
 exports.transfer = function (uuid){
-  sio.sockets.in(uuid).send('Man, good to see you back!');
+  io.sockets.in(uuid).send('Man, good to see you back!');
 }
