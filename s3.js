@@ -36,8 +36,8 @@ S3.prototype.constructor = S3;
 
 S3.prototype.getQueryString = function (host, bucketName, fileName){
 
-  var response_headers = 'response-content-type=binary/octet-stream' + '&' + 
-                         'response-content-disposition=attachment';
+  var response_headers =  'response-content-disposition=attachment' + '&' +
+                          'response-content-type=binary/octet-stream';
   
   var fileName = encodeURIComponent(fileName);
   var resource = '/' + bucketName +
