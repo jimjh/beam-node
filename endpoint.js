@@ -2,16 +2,23 @@
  * Endpoint Module
  * - Registers endpoint UUID for each connected client
  * - Notifies app server when a client is disconnected
+ * - Notifies target endpoint of pending file transfer
  * @author Jiunn Haur Lim
  */
  
 var http = require('http');
 var socketio = require('socket.io');
 var io = null;
- 
+
+//--- Events ---
+const EVT_SET_UUID = 'set uuid';
+
+//--- Data Keys ---
 const KEY_UUID = 'uuid';
+
 const APP_HOST = 'afternoon-fire-7441.heroku.com';
-const APP_PORT = 80
+const APP_PORT = 80;
+
 // const APP_HOST = 'localhost';
 // const APP_PORT = '3000';
 
@@ -87,9 +94,6 @@ var register = function (socket, uuid){
 //---------------------------------------------------------------------
 // PUBLIC
 //---------------------------------------------------------------------
-
-//--- Events ---
-exports.EVT_SET_UUID = 'set uuid';
 
 exports.listen = function(app){
   
