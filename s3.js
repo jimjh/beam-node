@@ -36,9 +36,10 @@ S3.prototype.constructor = S3;
 
 S3.prototype.getQueryString = function (host, bucketName, fileName){
 
+  var response_headers = 'response-content-type=binary/octet-stream';
   var resource = '/' + bucketName +
                  '/' + fileName +
-                 '?response-content-type=binary/octet-stream';
+                 '?' + response_headers;
   var expires = this._getExpires();
   
   var signature = this._getSignature (resource, expires);
@@ -46,7 +47,8 @@ S3.prototype.getQueryString = function (host, bucketName, fileName){
           '/' + fileName + '?' +
           'AWSAccessKeyId=' + this._awsAccessKey + '&' +
           'Expires=' + expires + '&' +
-          'Signature=' + signature;
+          'Signature=' + signature + '&' + 
+          response_headers;
   
 };
 
