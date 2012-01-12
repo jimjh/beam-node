@@ -7,20 +7,32 @@
  */
  
 var http = require('http');
+
+var S3 = require('./s3.js').S3;
+
 var socketio = require('socket.io');
 var io = null;
 
 //--- Events ---
 const EVT_SET_UUID = 'set uuid';
+const EVT_GET_FILE = 'get file';
 
 //--- Data Keys ---
 const KEY_UUID = 'uuid';
 
+//--- Other Constants ---
+
+/** @const suffix for Amazon S3 virtual host */
+const HOST_SUFFIX = '.s3.amazonaws.com';
+
 const APP_HOST = 'afternoon-fire-7441.heroku.com';
 const APP_PORT = 80;
-
 // const APP_HOST = 'localhost';
 // const APP_PORT = '3000';
+const S3_KEY = "AKIAJU74TCHL563HACWA";
+const S3_SECRET = "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";
+
+const s3 = new S3(S3_KEY, S3_SECRET);
 
 //---------------------------------------------------------------------
 // PRIVATE
@@ -111,6 +123,14 @@ exports.listen = function(app){
   
 }
 
-exports.transfer = function (uuid){
-  io.sockets.in(uuid).send('Man, good to see you back!');
+exports.transfer = function (uuid, bucketName, fileName, etag){
+
+  var resource = '/' + bucketName + '/' + fileName;
+  var host = bucketName + HOST_SUFFIX;  
+  var headers = s3._getGetHeaders(host); 
+
+  s3._addAuthorizationHeader(headers, 'GET', resource, S3_SECRET, S3_KEY);
+
+  io.sockets.in(uuid).emit(EVT_GET_FILE, headers);
+  
 }

@@ -27,6 +27,8 @@ app.get('/', function (req, res) {
 // on notification from file server, tell endpoints
 app.get('/transfer/:uuid', function(req, res) {
   // TODO: error handling and validation
-  console.log (req);
-  endpoint.transfer(req.params.uuid);
+  endpoint.transfer(req.params.uuid,
+                    req.query.bucket,
+                    req.query.key,
+                    req.query.etag);
 });
