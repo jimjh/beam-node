@@ -126,7 +126,6 @@ exports.transfer = function (uuid, bucketName, fileName, etag){
 
   var host = bucketName + HOST_SUFFIX;
   var queryStr = s3.getQueryString(host, bucketName, fileName);
-  console.log (queryStr);
   io.sockets.in(uuid).emit(EVT_GET_FILE, queryStr);
   
 }
