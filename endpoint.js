@@ -24,12 +24,10 @@ const KEY_UUID = 'uuid';
 /** @const suffix for Amazon S3 virtual host */
 const HOST_SUFFIX = '.s3.amazonaws.com';
 
-const APP_HOST = 'afternoon-fire-7441.heroku.com';
-const APP_PORT = 80;
-// const APP_HOST = 'localhost';
-// const APP_PORT = '3000';
-const S3_KEY = "AKIAJU74TCHL563HACWA";
-const S3_SECRET = "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";
+const APP_HOST = process.env.BEAM_APP_HOST;
+const APP_PORT = process.env.BEAM_APP_PORT;
+const S3_KEY = process.env.S3_KEY;
+const S3_SECRET = process.env.S3_SECRET;
 
 const s3 = new S3(S3_KEY, S3_SECRET);
 

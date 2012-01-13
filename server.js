@@ -3,20 +3,27 @@
  * @author Jiunn Haur Lim
  */
 
-var app = require('express').createServer();
+var express = require('express');
 var http = require('http');
+var app = express.createServer();
 var endpoint = require('./endpoint.js').listen(app);
 
 //---------------------------------------------------------------------
 // App bootstrapping
 //---------------------------------------------------------------------
 
-// copied from heroku example
-// var port = process.env.PORT || 3000;
 // nodester port
 var port = 13359;
 app.listen(port, function(){
   console.log('Listening on port ' + port);
+});
+
+app.configure('development', function(){
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true })); 
+});
+
+app.configure('production', function(){
+  app.use(express.errorHandler()); 
 });
 
 // reply with "Hello, World!" for every request
