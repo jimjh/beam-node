@@ -6,9 +6,12 @@
  */
   
 var	crypto = require('crypto');
+var querystring = require('querystring');
+var url = require('url');
 
 process.on('uncaughtException', function (err) {
-  console.log('warning! uncaught exception: ' + err);
+  // TODO: send email!
+  console.warn('Uncaught exception: ' + err);
 });
  
 /* 
@@ -27,46 +30,79 @@ process.on('uncaughtException', function (err) {
  *   CanonicalizedResource;
  */
 
+//---------------------------------------------------------------------
+// PUBLIC
+//---------------------------------------------------------------------
+
 var S3 = function(awsAccessKey, awsSecretKey, options){
 	this._awsSecretKey = awsSecretKey;
 	this._awsAccessKey = awsAccessKey;
 };
 
+/** @const number of seconds before the pre-signed URL expires */
+const EXPIRY_DURATION = 5*60;
+
+/** @const response headers for Amazon S3 (attach to end of query string) */
+const RESPONSE_HEADERS = 
+  querystring.stringify({
+    'response-content-disposition': 'attachment',
+    'response-content-type' : 'binary/octet-stream'});
+
 S3.prototype.constructor = S3;
 
+/**
+ * Returns a pre-signed query to retrieve a file from Amazon S3.
+ * @param {String}  host        virtual host for Amazon S3 bucket
+ * @param {String}  bucketName  name of Amazon S3 bucket
+ * @param {String}  fileName    name of file to download
+ */
 S3.prototype.getQueryString = function (host, bucketName, fileName){
-
-  var response_headers =  'response-content-disposition=attachment' + '&' +
-                          'response-content-type=binary/octet-stream';
   
   var fileName = encodeURIComponent(fileName);
   var resource = '/' + bucketName +
                  '/' + fileName +
-                 '?' + response_headers;
+                 '?' + RESPONSE_HEADERS;
+                 
+  var accessKey = this._awsAccessKey;
   var expires = this._getExpires();
-  
   var signature = this._getSignature (resource, expires);
-  return  'http://' + host +
-          '/' + fileName + '?' +
-          'AWSAccessKeyId=' + this._awsAccessKey + '&' +
-          'Expires=' + expires + '&' +
-          'Signature=' + signature + '&' + 
-          response_headers;
+  
+  var params = {
+    AWSAccessKeyId : accessKey,
+    Expires : expires,
+    Signature : signature
+  }
+  
+  return url.format({
+    host: host,
+    pathname: fileName,
+    query: query.stringify(params) + RESPONSE_HEADERS
+  });
   
 };
 
+//---------------------------------------------------------------------
+// PRIVATE
+//---------------------------------------------------------------------
+
 /**
- * Expires five minutes from now.
+ * Returns the time that is (now + EXPIRY DURATION) as a UNIX timestamp.
+ * Since Javascript gives it to us in milliseconds, it's rounded up to
+ * the nearest second.
  * @return number of seconds since epoch
  */
 S3.prototype._getExpires = function (){
   var d = new Date();
-  return Math.ceil(d.getTime()/1000) + 5*60;
+  return Math.ceil(d.getTime()/1000) + EXPIRY_DURATION;
 };
 
 /**
  * Creates a URL-encoded HMAC signature for the S3 request.
  * URL-Encode( Base64( HMAC-SHA1( StringToSign ) ) )
+ * @param {String}  resource    canonicalized resource name
+ * @param {Int}     expires     time when signature expires, in number of seconds
+ *                              since epoch
+ * @return URI-encoded HMAC digest
  */
 S3.prototype._getSignature = function (resource, expires){
   var stringToSign = "GET\n\n\n" + expires + "\n" + resource;
