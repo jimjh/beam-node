@@ -44,9 +44,8 @@ const EXPIRY_DURATION = 5*60;
 
 /** @const response headers for Amazon S3 (attach to end of query string) */
 const RESPONSE_HEADERS = 
-  querystring.stringify({
-    'response-content-disposition': 'attachment',
-    'response-content-type' : 'binary/octet-stream'});
+    'response-content-disposition=attachment' + ' &' +
+    'response-content-type=binary/octet-stream';
 
 S3.prototype.constructor = S3;
 
@@ -76,7 +75,7 @@ S3.prototype.getQueryString = function (host, bucketName, fileName){
   return url.format({
     host: host,
     pathname: fileName,
-    query: query.stringify(params) + RESPONSE_HEADERS
+    search: '?' + querystring.stringify(params) + '&' + RESPONSE_HEADERS
   });
   
 };
@@ -97,8 +96,8 @@ S3.prototype._getExpires = function (){
 };
 
 /**
- * Creates a URL-encoded HMAC signature for the S3 request.
- * URL-Encode( Base64( HMAC-SHA1( StringToSign ) ) )
+ * Creates a Base-64 HMAC signature for the S3 request.
+ * Base64( HMAC-SHA1( StringToSign ) )
  * @param {String}  resource    canonicalized resource name
  * @param {Int}     expires     time when signature expires, in number of seconds
  *                              since epoch
@@ -108,7 +107,7 @@ S3.prototype._getSignature = function (resource, expires){
   var stringToSign = "GET\n\n\n" + expires + "\n" + resource;
   var hmac = crypto.createHmac('sha1', this._awsSecretKey);
 	hmac.update(stringToSign);
-	return encodeURIComponent(hmac.digest('base64'));
+	return hmac.digest('base64');
 };
 
 // export the s3 library

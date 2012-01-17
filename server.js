@@ -32,10 +32,20 @@ app.get('/', function (req, res) {
 });
 
 // on notification from file server, tell endpoints
-app.get('/transfer/:uuid', function(req, res) {
-  // TODO: error handling and validation
-  endpoint.transfer(req.params.uuid,
+app.get('/transfer/:src_id/:target_id', function(req, res) {
+
+  if (!req.params.src_id ||
+      !req.params.target_id ||
+      !req.query.bucket ||
+      !req.query.key){
+    // bad request
+    res.send(400);
+    return;
+  }
+
+  endpoint.transfer(req.params.target_id,
                     req.query.bucket,
                     req.query.key);
-  res.send('Hello, World!');
+  res.send(200);
+  
 });

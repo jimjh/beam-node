@@ -15,6 +15,8 @@ var io = null;
 //--- Events ---
 const EVT_SET_UUID = 'set uuid';
 const EVT_GET_FILE = 'get file';
+const EVT_NEIGHBOR_ARRIVED = 'neighbor arrived';
+const EVT_NEIGHBOR_LEFT =  'neighbor left';
 
 //--- Data Keys ---
 const KEY_UUID = 'uuid';
@@ -37,9 +39,15 @@ const s3 = new S3(S3_KEY, S3_SECRET);
  
 /**
  * Unregisters an endpoint with the given UUID from the app server.
+ * @param socket           from socket.io 'disconnect' event
  * @param {UUID} uuid      UUID of endpoint to unregister
  */
-var unregister = function (uuid){
+var unregister = function (socket, uuid){
+
+  if (!uuid || !socket){
+    console.warn ('Missing parameters in register.');
+    return;
+  }
   
   var user = 'codex';
   var pwd = 'abc';
@@ -50,7 +58,7 @@ var unregister = function (uuid){
     'Content-Length' : 0
   };
 
-  // DELETE /endpoints/<uuid> HTTP/1.1
+  // DELETE /endpoints/<uuid>/deactivate HTTP/1.1
   var http_options = {
     host: APP_HOST,
     hostname: APP_HOST,
@@ -64,7 +72,7 @@ var unregister = function (uuid){
   var response_callback = function (res){
     console.log('Status from app server: ' + res.statusCode);
   };
-  // TODOOOOOOOO: where to put the data? content-length?
+
   // invoked on connection error
   var error_handler = function (e){
     console.log('Problem with request: ' + e.message);
@@ -74,6 +82,9 @@ var unregister = function (uuid){
   var req =  http.request(http_options, response_callback);
   req.on('error', error_handler);
   req.end();
+  
+  // tell everyone that he left
+  socket.broadcast.emit(EVT_NEIGHBOR_LEFT, {id: uuid});
 
 };
 
@@ -83,18 +94,26 @@ var unregister = function (uuid){
  * @param uuid        UUID of endpoint to register
  */
 var register = function (socket, uuid){
+
+  if (!socket || !uuid){
+    console.warn ('Missing parameters in register.');
+    return;
+  }
   
   // set endpoint UUID for this session
   socket.set(KEY_UUID, uuid);
   
   // create a room for this endpoint
   socket.join(uuid);
+  
+  // tell everyone that he is here!
+  socket.broadcast.json.emit(EVT_NEIGHBOR_ARRIVED, {id: uuid});
 
   // on disconnect, tell app server
   socket.on('disconnect', function () {
     socket.get(KEY_UUID, function (err, uuid) {
       console.log ('Disconnect received from ' + uuid);
-      unregister(uuid);
+      unregister(socket, uuid);
     });
   });
 
@@ -105,6 +124,8 @@ var register = function (socket, uuid){
 //---------------------------------------------------------------------
 
 exports.listen = function(app){
+  
+  if(!app) throw new Error('Missing app.');
   
   io = socketio.listen(app);
 
@@ -120,10 +141,20 @@ exports.listen = function(app){
   
 }
 
-exports.transfer = function (uuid, bucketName, fileName, etag){
+/**
+ * Notifies target endpoint to download the specified file from the specified
+ * bucket.
+ * @param {String}    ID of target endpoint
+ * @param {String}    Name of Amazon S3 bucket
+ * @param {String}    Name of file to download
+ */
+exports.transfer = function (target_id, bucketName, fileName){
+
+  if (!target_id || !bucketName || !fileName)
+    throw new Error('Missing parameters.');
 
   var host = bucketName + HOST_SUFFIX;
   var queryStr = s3.getQueryString(host, bucketName, fileName);
-  io.sockets.in(uuid).emit(EVT_GET_FILE, queryStr);
+  io.sockets.in(target_id).emit(EVT_GET_FILE, queryStr);
   
 }
